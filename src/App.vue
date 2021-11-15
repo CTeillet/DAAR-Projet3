@@ -8,10 +8,14 @@
       <router-link to="/account" class="navbar-item">Account</router-link>
     </div>
     <div class="navbar-items" v-if="store.state.account.address">
-      <router-link to="/createenterprise" class="navbar-item">Create Company</router-link>
+      <router-link to="/createenterprise" class="navbar-item"
+        >Create Company</router-link
+      >
     </div>
     <div class="navbar-items" v-if="store.state.account.address">
-      <router-link to="/viewcompany" class="navbar-item">View Company</router-link>
+      <router-link to="/viewcompany" class="navbar-item"
+        >View Company</router-link
+      >
     </div>
   </nav>
   <router-view />

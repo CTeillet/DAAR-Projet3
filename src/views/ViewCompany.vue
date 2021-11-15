@@ -1,13 +1,10 @@
 <template>
   Hello World
   <div class="home">
-      <card
-        title="View Companies"
-        subtitle="To never be lost"
-      >
-        <button v-on:click="viewCompany">Add 1</button>
-      </card>
-    </div>
+    <card title="View Companies" subtitle="To never be lost">
+      <button v-on:click="viewCompany">Add 1</button>
+    </card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -16,7 +13,7 @@ import { useStore } from 'vuex'
 import Card from '@/components/Card.vue'
 
 export default defineComponent({
-  components: { Card},
+  components: { Card },
   setup() {
     const store = useStore()
     const address = computed(() => store.state.account.address)
@@ -32,14 +29,13 @@ export default defineComponent({
     async viewCompany() {
       const { contract } = this
       let companies = await contract.methods.viewCompany(this.address).send()
-      console.log(companies);
+      console.log(companies)
     },
   },
   async mounted() {
     const { address, contract } = this
     await contract.methods.user(address).call()
   },
-
 })
 </script>
 

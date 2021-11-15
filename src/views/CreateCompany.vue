@@ -22,7 +22,7 @@ import { useStore } from 'vuex'
 import Card from '@/components/Card.vue'
 
 export default defineComponent({
-  components: { Card},
+  components: { Card },
   setup() {
     const store = useStore()
     const address = computed(() => store.state.account.address)
@@ -37,7 +37,7 @@ export default defineComponent({
   methods: {
     async createCompany() {
       const { contract, company } = this
-      console.log("Company :" + company);
+      console.log('Company :' + company)
       await contract.methods.createCompany(company, this.address).send()
     },
   },
@@ -45,7 +45,6 @@ export default defineComponent({
     const { address, contract } = this
     await contract.methods.user(address).call()
   },
-
 })
 </script>
 
