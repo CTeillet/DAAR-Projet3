@@ -54,13 +54,13 @@ contract BuildCollective is Ownable {
     emit UserSignedUp(msg.sender, users[msg.sender]);
   }
 
-  function createEnterprise(string memory name, address owner) public returns (Enterprise memory) {
+  function createCompany(string memory name, address owner) public returns (Enterprise memory) {
     require(users[owner].registered);
     enterprises.push(Enterprise(name, 0, owner, new address[](0)));
     emit EnterpriseCreated(name, owner, new address[](0), enterprises[enterprises.length - 1]);
   }
 
-  function addBalanceUser(uint256 amount) public returns (bool) {
+  function addBalance(uint256 amount) public returns (bool) {
     require(users[msg.sender].registered);
     users[msg.sender].balance += amount;
     return true;
@@ -71,5 +71,25 @@ contract BuildCollective is Ownable {
     //require(users[msg.sender].username == companyOwner);
     projects.push(Project(name, owner, companyOwner, ownerType, 0, new address[](0)));
     emit ProjectCreated(name, owner, companyOwner, new address[](0), projects[projects.length - 1]);
+  }
+
+  function viewCompany(address owner) public returns (Enterprise[] memory) {
+    require(users[msg.sender].registered);
+    
+    uint256 nbElem = 0;
+    for (uint256 i = 0; i < enterprises.length; i++) {
+      if (enterprises[i].owner == owner) {
+        nbElem++;
+      }
+    }
+    Enterprise[] memory result = new Enterprise[](nbElem);
+    uint256 j = 0;
+    for (uint256 i = 0; i < enterprises.length; i++) {
+      if (enterprises[i].owner == owner) {
+        result[j] = enterprises[i];
+        j++;
+      }
+    }
+    return result;
   }
 }
