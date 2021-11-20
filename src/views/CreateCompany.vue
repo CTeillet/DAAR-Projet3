@@ -3,7 +3,7 @@
     <form @submit.prevent="createCompany">
       <card
         title="Enter your company name here"
-        subtitle="Type directly in the input and hit enter. All spaces will be converted to _"
+        subtitle="Type directly in the input and hit enter."
       >
         <input
           type="text"
