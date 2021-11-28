@@ -1,4 +1,19 @@
 <template>
+  <div class="home" v-if="!account">
+    <form @submit.prevent="createCompany">
+      <card
+        title="Enter your company name here"
+        subtitle="Type directly in the input and hit enter."
+      >
+        <input
+          type="text"
+          class="input-company"
+          v-model="company"
+          placeholder="Type your company name here"
+        />
+      </card>
+    </form>
+  </div>
   <div class="home" v-if="ready && (companies.length>0)">
       <card
         v-for="company in companies"
@@ -28,20 +43,21 @@
           <li v-else> No users </li>
           <form @submit.prevent="addUserCompany(addressInput, company.index)">  
             <div class="card-body">      
-              <input
-                type="text"
-                class="input-address"
-                v-model="addressInput"
-                placeholder="Type the address of the user you want to add"
-              />
+              <select v-if="usersReady" v-model="addressInput" class="input-user">
+                <option value="">Select a user</option>
+                <option v-for="(user, index) in users" :key="index" :value="user.address">
+                  {{ user.name }} - {{ user.address }}
+                </option>
+              </select>
+              <button type="submit"> Add user </button>
             </div>
           </form>
         </ul>
       </card>
-    </div>
-    <div class="home" v-else>
+  </div>
+  <div class="home" v-else>
       <h1 >No companies</h1>
-    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -56,19 +72,21 @@ export default defineComponent({
     const address = computed(() => store.state.account.address)
     const balance = computed(() => store.state.account.balance)
     const contract = computed(() => store.state.contract)
-
     return { address, contract, balance }
   },
   data() {
     return {
       companies: [],
+      users: [],
       ready: false,
+      usersReady: false,
+      company : '',
     }
   },
   methods: {
     async viewCompanies() {
       const { contract } = this
-      let companiesRes = await contract.methods.viewCompanies(this.address).call()
+      let companiesRes = await contract.methods.viewCompanies().call()
       let tempCompanies = await companiesRes.map(async (resComp:any) => {
         const company = resComp[0]
         const index = resComp[1]
@@ -93,14 +111,35 @@ export default defineComponent({
       await contract.methods.addTokenCompany(money, companyIndex).send()
     },
     async addUserCompany(address:string, companyIndex:number) {
+      console.log(address, companyIndex)
       const { contract } = this
       await contract.methods.addUserCompany(address, companyIndex).send()
-    }
+    },
+    async getUsers() {
+      const { contract } = this
+      let usersRes = await contract.methods.getUsers().call()
+      console.log(usersRes)
+      let tempUsers = await usersRes.map(async (resUser:any) => {
+        const user = resUser[0]
+        const address = resUser[1]
+        const name = user[0]
+        return { name, address }
+      })
+      await Promise.all(tempUsers)
+      this.users = tempUsers
+      this.usersReady = true
+      console.log(this.users)
+    },
+    async createCompany() {
+      const { contract, company } = this
+      await contract.methods.createCompany(company, this.address).send()
+    },
   },
   async mounted() {
     const { address, contract } = this
     await contract.methods.user(address).call()
     await this.viewCompanies()
+    await this.getUsers()
   },
 })
 </script>
