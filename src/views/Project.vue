@@ -65,6 +65,7 @@
           />
           </div>
       </form>
+      <div >
       Give tokens to contributors
       <form @submit.prevent="giveTokenContributors(tokens, contributorsIndex, project.index)">
       <input
@@ -80,6 +81,7 @@
       </select>
       <button type="submit"> Give tokens </button>
       </form>
+      </div>
       <form @submit.prevent="addCommit(link, project.index)">  
           <div class="card-body">
           Enter the the link of your commit    
@@ -123,6 +125,15 @@
             <input type="submit" value="Valider Bounty"/>
             
           </form>
+        </li>
+      </ol>
+      Commits :
+      <ol>
+        <li v-for="commit in project.commitsRes" :key="commit.indexC"> 
+          <strong>Link:</strong> {{ commit.link }}
+          <br>
+          <strong>Person:</strong> {{ commit.person }}
+          <br>
         </li>
       </ol>
     </card>
@@ -300,7 +311,7 @@ export default defineComponent({
           return { link, personRes, projectId, indexC }
         })
         const commitsRes = await Promise.all(tempCommits)
-        return { name, ownerRes, companyOwnerRes, ownerType, balance, contributorsAdd, bountiesRes, commitsRes, index }
+        return { name, ownerRes, companyOwnerRes, ownerType, balance, contributorsAdd, bountiesRes, commitsRes, ownerAdd, index }
       })
       this.projects = await Promise.all(tempProjects)
       this.projectsReady = true

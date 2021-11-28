@@ -1,5 +1,7 @@
 # Build Collective
 
+This project was made by Alexis Capitanio (3700408) and Corentin Teillet (3700070).
+
 Welcome to the DAAR project. The idea will be to implement an OpenCollective competitor
 in a decentralized way, on Ethereum. This will have cool side effects, like not
 be forced to pay for servers.
