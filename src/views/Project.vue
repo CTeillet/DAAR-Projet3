@@ -39,7 +39,7 @@
   </div>
   <div class="home" v-if="projectsReady">
     <h1 v-if="projects.length==0">No projects</h1>
-    <card 
+    <card
       v-for="project in projects" :key="project.index" :title="project.name" :subtitle="project.type">
       Name of the project: {{ project.name }}
       <br>
@@ -65,6 +65,21 @@
           />
           </div>
       </form>
+      Give tokens to contributors
+      <form @submit.prevent="giveTokenContributors(tokens, contributorsIndex, project.index)">
+      <input
+        type="number"
+        class="input-money"
+        v-model="tokens"
+        placeholder="Type the amount of tokens you want to give">
+      <select v-model="contributorsIndex">
+        <option disabled  value="">Select a contributor</option>
+        <option v-for="(contributor,index) in project.contributorsAdd" :key="index" :value="index">
+          {{ contributor }}
+        </option>
+      </select>
+      <button type="submit"> Give tokens </button>
+      </form>
       <form @submit.prevent="addCommit(link, project.index)">  
           <div class="card-body">
           Enter the the link of your commit    
@@ -79,12 +94,12 @@
       Contributors : 
       {{ project.contribAdd }}
       <br>
-      <!--<ol >
-        <li v-for="contributor in project.contributors" :key="contributor"> 
+      <ol>
+        <li v-for="contributor in project.contributorsAdd" :key="contributor"> 
           <strong>Name:</strong> {{ contributor[0] }}
           <br>
         </li>
-      </ol>-->
+      </ol>
       Bounties : 
       <ol>
         <li v-for="bounty in project.bountiesRes" :key="bounty"> 
@@ -247,13 +262,13 @@ export default defineComponent({
         }
         const balance:number = project[4]
         const contribAdd = project[5]
-        const contributors:string[] = []
-        // console.log("ContribAdd : " + contribAdd.length);
-        // for (let userAdd in contribAdd ){
-        //   console.log("UserAdd : " + userAdd);
-        //   const user = await contract.methods.user(userAdd).call()
-        //   contributors.push(user[0])
-        // }
+        const contributorsAdd = []
+        contributorsAdd.push(contribAdd)
+        const contributors = []
+        //for (let userAdd in contributorsAdd ){
+          //const user = await contract.methods.user(userAdd).call()
+          //contributors.push(user[0])
+        //}
         let bounties = await contract.methods.getBounties(index).call()
         let tempBounties = await bounties.map(async (resBounty:any) => {
           const bounty = resBounty[0]
@@ -285,7 +300,7 @@ export default defineComponent({
           return { link, personRes, projectId, indexC }
         })
         const commitsRes = await Promise.all(tempCommits)
-        return { name, ownerRes, companyOwnerRes, ownerType, balance, contribAdd, bountiesRes, commitsRes, index }
+        return { name, ownerRes, companyOwnerRes, ownerType, balance, contributorsAdd, bountiesRes, commitsRes, index }
       })
       this.projects = await Promise.all(tempProjects)
       this.projectsReady = true
@@ -308,6 +323,12 @@ export default defineComponent({
     async checkBounty(bountyIndex:number, commitIndex:number) {
       const {contract } = this
       await contract.methods.checkBounty(bountyIndex, commitIndex).send();
+      this.viewProjects();
+    },
+    async giveTokenContributors(money:number, contributorIndex:number, projectIndex:number) {
+      const { contract } = this
+      console.log(money, contributorIndex, projectIndex)
+      await contract.methods.giveTokenContributors(money, projectIndex, contributorIndex).send()
       this.viewProjects();
     },
   },

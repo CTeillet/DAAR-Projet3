@@ -262,4 +262,16 @@ contract BuildCollective is Ownable {
     users[commits[commitIndex].person].balance += bounties[bountyIndex].reward;
     return true;
   }
+
+  function giveTokenContributors(uint256 money, uint256 projectIndex, uint256 contributorIndex) public returns (bool) {
+    require(users[msg.sender].registered, "Not user");
+    require(msg.sender==projects[projectIndex].owner, "Not owner");
+    require(projectIndex>=0 && projectIndex<projects.length, "Project index out of bounds");
+    require(contributorIndex>=0 && contributorIndex<projects[projectIndex].contributors.length, "Contributor index out of bounds");
+    require(money>0, "Money must be positive");
+    require(projects[projectIndex].balance >= money, "Not enough money");
+    projects[projectIndex].balance -= money;
+    users[projects[projectIndex].contributors[contributorIndex]].balance += money;
+    return true;
+  }
 }
